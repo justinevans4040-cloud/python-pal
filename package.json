@@ -1,0 +1,64 @@
+{
+  "name": "python-pal",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Python Pal — Bilingual Python learning app for beginners",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "electron:build": "vite build && electron-builder",
+    "cap:android": "vite build && cap sync android && cap open android",
+    "cap:ios": "vite build && cap sync ios && cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/android": "^8.4.2",
+    "@capacitor/cli": "^8.4.2",
+    "@capacitor/core": "^8.4.2",
+    "@capacitor/ios": "^8.4.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^9.2.4",
+    "electron": "^33.4.11",
+    "electron-builder": "^25.1.8",
+    "vite": "^5.4.2",
+    "wait-on": "^8.0.5"
+  },
+  "build": {
+    "appId": "com.justindevstudio.pythonpal",
+    "productName": "Python Pal",
+    "copyright": "© 2026 Justin Evans",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "public/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "public/icon.icns",
+      "category": "public.app-category.education"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "public/icon.png",
+      "category": "Education"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
+}
