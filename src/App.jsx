@@ -349,6 +349,31 @@ export default function App() {
         </button>
         <div className="top-actions">
           <span className="xp-pill">◆ {totalXP} XP</span>
+          <a
+            href="https://justinevans4040-cloud.github.io/wakecodex/forgefront-systems/index.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ff-topbar-btn"
+            aria-label="Forgefront Systems"
+            title="Forgefront Systems"
+          >
+            <svg width="18" height="18" viewBox="0 0 22 22" fill="none">
+              <polygon points="11,1 21,6 21,16 11,21 1,16 1,6" stroke="url(#ffgt)" strokeWidth="1.6" fill="none"/>
+              <polygon points="11,5 17,8.5 17,13.5 11,17 5,13.5 5,8.5" fill="url(#ffgt2)" opacity="0.3"/>
+              <circle cx="11" cy="11" r="2.5" fill="url(#ffgt)"/>
+              <defs>
+                <linearGradient id="ffgt" x1="0" y1="0" x2="22" y2="22">
+                  <stop offset="0%" stopColor="#00d4ff"/>
+                  <stop offset="100%" stopColor="#7c3aed"/>
+                </linearGradient>
+                <linearGradient id="ffgt2" x1="0" y1="0" x2="22" y2="22">
+                  <stop offset="0%" stopColor="#00d4ff"/>
+                  <stop offset="100%" stopColor="#7c3aed"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span className="ff-topbar-label">FORGEFRONT</span>
+          </a>
           <button className="lang-button" aria-label={lang === 'en' ? 'Cambiar a español' : 'Switch to English'}
             onClick={() => setLang(l => l === 'en' ? 'es' : 'en')}>
             {lang === 'en' ? 'ES' : 'EN'}
