@@ -1,0 +1,59 @@
+# ── Web: Build + Deploy to GitHub Pages ─────────────────────────────────────
+# Triggers: every push to master, and manually from Actions tab.
+# Result:   https://justinevans4040-cloud.github.io/python-pal/
+
+name: Deploy Web
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Allow the workflow to write to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Only one deploy at a time; cancel in-progress if a new push arrives
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build Vite app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build for GitHub Pages
+        # BASE_URL sets the Vite base so all asset paths include /python-pal/
+        env:
+          BASE_URL: /python-pal/
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4

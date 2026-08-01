@@ -107,7 +107,7 @@ function checkConcept(lessonId, code, lang) {
 function runPython(code) {
   return new Promise((resolve, reject) => {
     if (!window.Worker) { reject(new Error('ENGINE_UNAVAILABLE')); return; }
-    const w = new Worker('/python-worker.js');
+    const w = new Worker(import.meta.env.BASE_URL + 'python-worker.js');
     const timeout = setTimeout(() => { w.terminate(); reject(new Error('RUN_TIMEOUT')); }, 6000);
     w.onmessage = (e) => {
       const d = e.data || {};
