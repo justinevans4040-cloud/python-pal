@@ -702,6 +702,38 @@ export default function App() {
                 <b style={{ color: 'var(--red)' }}>✕</b>
               </div>
             </div>
+
+            {/* ── Forgefront Systems ── */}
+            <a
+              href="https://justinevans4040-cloud.github.io/wakecodex/forgefront-systems/index.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="forgefront-btn"
+              aria-label="Forgefront Systems"
+            >
+              <div className="ff-logo-mark">
+                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                  <polygon points="11,1 21,6 21,16 11,21 1,16 1,6" stroke="url(#ffg)" strokeWidth="1.5" fill="none"/>
+                  <polygon points="11,5 17,8.5 17,13.5 11,17 5,13.5 5,8.5" fill="url(#ffg2)" opacity="0.25"/>
+                  <circle cx="11" cy="11" r="2.5" fill="url(#ffg)"/>
+                  <defs>
+                    <linearGradient id="ffg" x1="0" y1="0" x2="22" y2="22">
+                      <stop offset="0%" stopColor="#00d4ff"/>
+                      <stop offset="100%" stopColor="#7c3aed"/>
+                    </linearGradient>
+                    <linearGradient id="ffg2" x1="0" y1="0" x2="22" y2="22">
+                      <stop offset="0%" stopColor="#00d4ff"/>
+                      <stop offset="100%" stopColor="#7c3aed"/>
+                    </linearGradient>
+                  </defs>
+                </svg>
+              </div>
+              <div className="ff-text">
+                <span>BUILT BY</span>
+                <strong>FORGEFRONT SYSTEMS</strong>
+              </div>
+              <span className="ff-arrow">↗</span>
+            </a>
           </div>
         )}
       </div>
