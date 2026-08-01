@@ -344,7 +344,7 @@ export default function App() {
       {/* ── Top bar ── */}
       <div className="app-topbar">
         <button className="brand" onClick={() => { setInLesson(false); setView('home'); }}>
-          <span>{'{P}'}</span>
+          <img src={import.meta.env.BASE_URL + 'icon-192.png'} alt="Python Pal" className="brand-icon" />
           <strong>PYTHON<em>PAL</em></strong>
         </button>
         <div className="top-actions">
@@ -604,7 +604,7 @@ export default function App() {
         {view === 'tutor' && !inLesson && (
           <div className="tutor-view">
             <div className="tutor-head">
-              <div className="pal-avatar">{'{P}'}<span>●</span></div>
+              <div className="pal-avatar"><img src={import.meta.env.BASE_URL + 'icon-192.png'} alt="Pal" /><span>●</span></div>
               <div><h1>{X.tutor}</h1><p>{X.tutorSub}</p></div>
             </div>
             <div className="context-chip">
@@ -721,7 +721,7 @@ export default function App() {
       {!onboarded && (
         <div className="onboarding">
           <div className="onboard-card">
-            <div className="onboard-logo">{'{P}'}</div>
+            <div className="onboard-logo"><img src={import.meta.env.BASE_URL + 'icon-192.png'} alt="Python Pal" /></div>
             <span className="section-kicker">ENGLISH · ESPAÑOL</span>
             <h1>{STR[onboardLang].welcome}</h1>
             <p>{STR[onboardLang].welcomeSub}</p>
