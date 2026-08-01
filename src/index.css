@@ -77,15 +77,44 @@ button:focus-visible, textarea:focus-visible, input:focus-visible {
   height: 34px; padding: 0 10px;
   transition: border-color .2s, box-shadow .2s;
 }
-.ff-topbar-btn:hover {
-  border-color: #00d4ff66;
-  box-shadow: 0 0 14px #00d4ff22;
-}
+.ff-topbar-btn:hover { border-color: #00d4ff66; box-shadow: 0 0 14px #00d4ff22; }
 .ff-topbar-label {
   background: linear-gradient(90deg, #00d4ff, #7c3aed);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
   background-clip: text; font-size: 8px; font-weight: 900; letter-spacing: .14em;
 }
+
+/* Forgefront footer — every tab */
+.ff-footer {
+  border-top: 1px solid var(--line);
+  padding: 18px 0 4px;
+  margin-top: 32px;
+  display: flex;
+  justify-content: center;
+}
+.ff-footer-btn {
+  display: inline-flex; align-items: center; gap: 9px; text-decoration: none;
+  border: 1px solid #00d4ff22; border-radius: 100px;
+  background: linear-gradient(135deg, #00d4ff08, #7c3aed08);
+  padding: 9px 16px;
+  transition: border-color .2s, box-shadow .2s, transform .15s;
+}
+.ff-footer-btn:hover {
+  border-color: #00d4ff55;
+  box-shadow: 0 0 18px #00d4ff15;
+  transform: translateY(-1px);
+}
+.ff-footer-text {
+  font-size: 10px; color: var(--muted); letter-spacing: .03em;
+}
+.ff-footer-text strong {
+  background: linear-gradient(90deg, #00d4ff, #7c3aed);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text; font-weight: 900;
+}
+.ff-footer-arrow { color: #00d4ff; font-size: 12px; opacity: .6; transition: transform .2s, opacity .2s; }
+.ff-footer-btn:hover .ff-footer-arrow { transform: translate(2px, -2px); opacity: 1; }
+
 
 
 /* ── Content & animations ── */

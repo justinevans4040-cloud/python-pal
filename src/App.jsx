@@ -344,7 +344,14 @@ export default function App() {
       {/* ── Top bar ── */}
       <div className="app-topbar">
         <button className="brand" onClick={() => { setInLesson(false); setView('home'); }}>
-          <img src={import.meta.env.BASE_URL + 'icon-192.png'} alt="Python Pal" className="brand-icon" />
+          <div className="brand-icon">
+            <img
+              src={import.meta.env.BASE_URL + 'icon-192.png'}
+              alt="Python Pal"
+              onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='grid'; }}
+            />
+            <span style={{display:'none',fontFamily:'monospace',fontWeight:900,fontSize:16,color:'#4da3ff'}}>P</span>
+          </div>
           <strong>PYTHON<em>PAL</em></strong>
         </button>
         <div className="top-actions">
@@ -761,6 +768,35 @@ export default function App() {
             </a>
           </div>
         )}
+
+        {/* ── Forgefront footer — shows on every tab ── */}
+        <footer className="ff-footer">
+          <a
+            href="https://justinevans4040-cloud.github.io/wakecodex/forgefront-systems/index.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="ff-footer-btn"
+            aria-label="Forgefront Systems"
+          >
+            <svg width="16" height="16" viewBox="0 0 22 22" fill="none">
+              <polygon points="11,1 21,6 21,16 11,21 1,16 1,6" stroke="url(#ffgf)" strokeWidth="1.6" fill="none"/>
+              <polygon points="11,5 17,8.5 17,13.5 11,17 5,13.5 5,8.5" fill="url(#ffgf2)" opacity="0.3"/>
+              <circle cx="11" cy="11" r="2.5" fill="url(#ffgf)"/>
+              <defs>
+                <linearGradient id="ffgf" x1="0" y1="0" x2="22" y2="22">
+                  <stop offset="0%" stopColor="#00d4ff"/>
+                  <stop offset="100%" stopColor="#7c3aed"/>
+                </linearGradient>
+                <linearGradient id="ffgf2" x1="0" y1="0" x2="22" y2="22">
+                  <stop offset="0%" stopColor="#00d4ff"/>
+                  <stop offset="100%" stopColor="#7c3aed"/>
+                </linearGradient>
+              </defs>
+            </svg>
+            <span className="ff-footer-text">Created by <strong>Forgefront Systems</strong></span>
+            <span className="ff-footer-arrow">↗</span>
+          </a>
+        </footer>
       </div>
 
       {/* ── Bottom Nav ── */}
