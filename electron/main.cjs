@@ -5,34 +5,32 @@ const isDev = !app.isPackaged;
 function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
-    height: 820,
-    minWidth: 800,
-    minHeight: 600,
+    height: 840,
+    minWidth: 900,
+    minHeight: 640,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     icon: path.join(__dirname, '../public/icon.ico'),
-    backgroundColor: '#050b14',
+    backgroundColor: '#0a0a0a',
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
 
-  // In dev, load Vite dev server; in production, load built dist
+  win.setMenuBarVisibility(false);
+
   if (isDev) {
     win.loadURL('http://localhost:5173');
-    win.webContents.openDevTools({ mode: 'detach' });
   } else {
     win.loadFile(path.join(__dirname, '../dist/index.html'));
   }
 
-  // Open external links in system browser, not in Electron
   win.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
 }
 
-// Application menu (minimal — removes debug menu items in production)
 function buildMenu() {
   const template = [
     ...(process.platform === 'darwin' ? [{ role: 'appMenu' }] : []),

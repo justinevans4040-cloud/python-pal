@@ -213,9 +213,31 @@ export default function App() {
 
     requestPersist(() => setPersistBanner(true));
 
-    const handler = (e) => { e.preventDefault(); setInstallPrompt(e); };
+    const isElectron = /electron/i.test(navigator.userAgent);
+    const handler = (e) => {
+      if (isElectron) { e.preventDefault(); return; }
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
     window.addEventListener('beforeinstallprompt', handler);
-    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+    if (!isElectron && 'serviceWorker' in navigator) {
+      const swUrl = import.meta.env.BASE_URL + 'sw.js';
+      navigator.serviceWorker.register(swUrl).catch(() => {});
+
+      // Listen for the SW_UPDATED message from sw.js v5+
+      // When the new SW wipes the old cache it posts this message so we can
+      // show a "tap to reload" banner instead of silently breaking things.
+      navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data?.type === 'SW_UPDATED') {
+          showToast(
+            lang === 'en'
+              ? 'App updated! Tap to reload for the latest version.'
+              : '¡App actualizada! Toca para recargar.',
+            8000
+          );
+        }
+      });
+    }
 
     return () => window.removeEventListener('beforeinstallprompt', handler);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -346,11 +368,11 @@ export default function App() {
         <button className="brand" onClick={() => { setInLesson(false); setView('home'); }}>
           <div className="brand-icon">
             <img
-              src={import.meta.env.BASE_URL + 'icon-192.png'}
+              src={import.meta.env.BASE_URL + 'icons/brand.png'}
               alt="Python Pal"
               onError={e => { e.target.style.display='none'; e.target.nextSibling.style.display='grid'; }}
             />
-            <span style={{display:'none',fontFamily:'monospace',fontWeight:900,fontSize:16,color:'#4da3ff'}}>P</span>
+            <span style={{display:'none',fontFamily:'Cinzel, Georgia, serif',fontWeight:900,fontSize:16,color:'#d4af37'}}>P</span>
           </div>
           <strong>PYTHON<em>PAL</em></strong>
         </button>
@@ -445,7 +467,7 @@ export default function App() {
                 <button className="text-button" onClick={() => setView('learn')}>All →</button>
               </div>
               <button className="path-card path-blue" onClick={() => setView('learn')}>
-                <div className="path-icon">{'{ }'}</div>
+                <div className="path-icon path-icon-img"><img src={import.meta.env.BASE_URL + 'icons/learn.png'} alt="" /></div>
                 <div>
                   <h3>{X.foundations}</h3>
                   <p>{X.foundationSub}</p>
@@ -453,8 +475,8 @@ export default function App() {
                 </div>
                 <b>→</b>
               </button>
-              <button className="path-card path-gold" onClick={() => setView('learn')}>
-                <div className="path-icon">⌁</div>
+              <button className="path-card path-gold" onClick={() => setView('code')}>
+                <div className="path-icon path-icon-img"><img src={import.meta.env.BASE_URL + 'icons/code.png'} alt="" /></div>
                 <div>
                   <h3>{X.projects}</h3>
                   <p>{X.projectSub}</p>
@@ -636,7 +658,7 @@ export default function App() {
         {view === 'tutor' && !inLesson && (
           <div className="tutor-view">
             <div className="tutor-head">
-              <div className="pal-avatar"><img src={import.meta.env.BASE_URL + 'icon-192.png'} alt="Pal" /><span>●</span></div>
+              <div className="pal-avatar"><img src={import.meta.env.BASE_URL + 'icons/tutor.png'} alt="Pal" /><span>●</span></div>
               <div><h1>{X.tutor}</h1><p>{X.tutorSub}</p></div>
             </div>
             <div className="context-chip">
@@ -714,20 +736,20 @@ export default function App() {
                 <input style={{ background: 'var(--panel)', border: '1px solid var(--line)', color: 'var(--ink)', borderRadius: 8, padding: '6px 10px', fontSize: 12, width: 110 }}
                   value={userName} onChange={e => setUserName(e.target.value)} placeholder={X.namePlaceholder} />
               </div>
-              {installPrompt && (
+              {!/electron/i.test(navigator.userAgent) && installPrompt && (
                 <div className="setting-row install-row" role="button" tabIndex={0}
                   onClick={async () => { installPrompt.prompt(); await installPrompt.userChoice; setInstallPrompt(null); }}>
                   <div><strong>{X.install}</strong><span>{X.installSub}</span></div>
                   <b>⬇</b>
                 </div>
               )}
-              {!installPrompt && (
+              {!/electron/i.test(navigator.userAgent) && !installPrompt && (
                 <div className="setting-row install-row" role="button" tabIndex={0} onClick={() => setShowIosHelp(h => !h)}>
                   <div><strong>{X.install}</strong><span>{X.installSub}</span></div>
                   <b>⬇</b>
                 </div>
               )}
-              {showIosHelp && <p className="ios-help">{X.iosHelp}</p>}
+              {!/electron/i.test(navigator.userAgent) && showIosHelp && <p className="ios-help">{X.iosHelp}</p>}
               <div className="setting-row danger-row" style={{ cursor: 'pointer' }}
                 onClick={() => { if (window.confirm(lang === 'en' ? 'Reset all progress? This cannot be undone.' : '¿Reiniciar todo el progreso? Esto no se puede deshacer.')) { localStorage.clear(); window.location.reload(); } }}>
                 <div><strong style={{ color: 'var(--red)' }}>{lang === 'en' ? 'Reset all progress' : 'Reiniciar progreso'}</strong><span>{lang === 'en' ? 'Cannot be undone' : 'No se puede deshacer'}</span></div>
@@ -814,7 +836,7 @@ export default function App() {
       {!onboarded && (
         <div className="onboarding">
           <div className="onboard-card">
-            <div className="onboard-logo"><img src={import.meta.env.BASE_URL + 'icon-192.png'} alt="Python Pal" /></div>
+            <div className="onboard-logo"><img src={import.meta.env.BASE_URL + 'icons/brand.png'} alt="Python Pal" /></div>
             <span className="section-kicker">ENGLISH · ESPAÑOL</span>
             <h1>{STR[onboardLang].welcome}</h1>
             <p>{STR[onboardLang].welcomeSub}</p>

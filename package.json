@@ -1,16 +1,19 @@
 {
   "name": "python-pal",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.1.0",
   "type": "module",
-  "description": "Python Pal — Bilingual Python learning app for beginners",
-  "main": "electron/main.js",
+  "description": "Python Pal — bilingual Python learning for beginners",
+  "author": "ForgeFront Systems",
+  "main": "electron/main.cjs",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
     "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
-    "electron:build": "vite build && electron-builder",
+    "electron:build": "vite build && electron-builder --win nsis",
+    "dist:appx": "vite build && electron-builder --win appx",
+    "assets:store": "python store-submission/_generate_store_assets.py",
     "cap:android": "vite build && cap sync android && cap open android",
     "cap:ios": "vite build && cap sync ios && cap open ios"
   },
@@ -31,34 +34,40 @@
     "wait-on": "^8.0.5"
   },
   "build": {
-    "appId": "com.justindevstudio.pythonpal",
+    "appId": "ForgeFrontSystems.PythonPal",
     "productName": "Python Pal",
-    "copyright": "© 2026 Justin Evans",
+    "copyright": "Copyright © 2026 ForgeFront Systems",
     "directories": {
-      "output": "release"
+      "output": "release",
+      "buildResources": "electron/buildResources"
     },
     "files": [
       "dist/**/*",
-      "electron/**/*",
-      "public/**/*"
+      "electron/main.cjs"
     ],
     "win": {
-      "target": "nsis",
+      "target": ["appx"],
       "icon": "public/icon.ico"
+    },
+    "appx": {
+      "identityName": "ForgeFrontSystems.PythonPal",
+      "publisher": "CN=8E906094-1F36-496B-A889-858E25A1FCB3",
+      "publisherDisplayName": "ForgeFront Systems",
+      "applicationId": "PythonPal",
+      "displayName": "Python Pal",
+      "languages": ["en-US"],
+      "backgroundColor": "#0A0A0A",
+      "showNameOnTiles": true
     },
     "mac": {
       "target": "dmg",
-      "icon": "public/icon.icns",
+      "icon": "public/icon.png",
       "category": "public.app-category.education"
     },
     "linux": {
       "target": "AppImage",
       "icon": "public/icon.png",
       "category": "Education"
-    },
-    "nsis": {
-      "oneClick": false,
-      "allowToChangeInstallationDirectory": true
     }
   }
 }
