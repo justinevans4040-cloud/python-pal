@@ -1,13 +1,3 @@
-# ── Android: Build APK ────────────────────────────────────────────────────────
-# Triggers: version tags (v*.*.*)  or manually from Actions tab.
-# Result:   debug APK attached to the GitHub Release.
-#
-# For a signed release APK, add these secrets to your repo:
-#   KEYSTORE_BASE64    — base64-encoded .jks keystore file
-#   KEYSTORE_PASSWORD  — keystore password
-#   KEY_ALIAS          — key alias
-#   KEY_PASSWORD       — key password
-
 name: Build Android
 
 on:
@@ -17,11 +7,11 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-android:
-    name: Build Android APK
+    name: Build Android release APK
     runs-on: ubuntu-latest
 
     steps:
@@ -40,10 +30,10 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Vite web assets
+      - name: Build web assets
         run: npm run build
 
-      - name: Add Android platform (first time only)
+      - name: Add Android platform when absent
         run: |
           if [ ! -d "android" ]; then
             npx cap add android
@@ -55,23 +45,21 @@ jobs:
       - name: Make Gradle wrapper executable
         run: chmod +x android/gradlew
 
-      - name: Build debug APK
+      - name: Build release APK
         working-directory: android
-        run: ./gradlew assembleDebug
+        run: ./gradlew assembleRelease
 
-      - name: Locate APK
+      - name: Locate release APK
         id: find-apk
+        shell: bash
         run: |
-          APK=$(find android -name "*.apk" | head -1)
-          echo "path=$APK" >> $GITHUB_OUTPUT
+          APK=$(find android/app/build/outputs/apk/release -name "*.apk" | head -1)
+          test -n "$APK"
+          echo "path=$APK" >> "$GITHUB_OUTPUT"
 
-      - name: Upload APK artifact
+      - name: Upload release artifact
         uses: actions/upload-artifact@v4
         with:
-          name: python-pal-android
+          name: python-pal-android-release-unsigned
           path: ${{ steps.find-apk.outputs.path }}
-
-      - name: Attach APK to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: ${{ steps.find-apk.outputs.path }}
+          if-no-files-found: error
