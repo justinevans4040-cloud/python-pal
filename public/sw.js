@@ -8,6 +8,7 @@ const CORE = [
   'icon-192.png',
   'icon-512.png',
   'python-worker.js',
+  'python-engine-worker.mjs',
 ].map(path => new URL(path, SCOPE).toString());
 
 self.addEventListener('install', event => {
