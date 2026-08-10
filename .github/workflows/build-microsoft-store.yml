@@ -1,0 +1,36 @@
+name: Build Microsoft Store
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-store-package:
+    name: Build Windows APPX
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build APPX package
+        run: npm run dist:appx
+
+      - name: Upload APPX artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-pal-microsoft-store
+          path: release/*.appx
+          if-no-files-found: error
