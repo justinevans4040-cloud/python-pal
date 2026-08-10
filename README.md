@@ -82,14 +82,14 @@ npm run build
 npx cap sync android
 ```
 
-The GitHub Actions Android workflow produces a release APK artifact. Store signing is applied only when the required signing secrets are configured.
+The GitHub Actions Android workflow produces an **unsigned release APK** for build verification. Distribution signing material is intentionally not stored in the repository; a store-distribution APK must be signed with the protected Python Pal release key before publication.
 
 ## Release automation
 
 - `deploy-web.yml` — builds and deploys the web application from `master`.
 - `build-desktop.yml` — builds standard desktop installers for versioned releases.
 - `build-microsoft-store.yml` — builds the Windows APPX package.
-- `build-android.yml` — builds the Android release package and signs it when signing credentials are configured.
+- `build-android.yml` — builds the unsigned Android release artifact for verification and downstream signing.
 
 ## Source policy
 
