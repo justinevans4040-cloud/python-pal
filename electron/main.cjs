@@ -2,6 +2,17 @@ const { app, BrowserWindow, shell, Menu } = require('electron');
 const path = require('path');
 const isDev = !app.isPackaged;
 
+function openExternal(url) {
+  try {
+    const target = new URL(url);
+    if (['https:', 'http:', 'mailto:'].includes(target.protocol)) {
+      shell.openExternal(url);
+    }
+  } catch {
+    // Ignore malformed external URLs.
+  }
+}
+
 function createWindow() {
   const win = new BrowserWindow({
     width: 1280,
@@ -14,6 +25,7 @@ function createWindow() {
     webPreferences: {
       contextIsolation: true,
       nodeIntegration: false,
+      sandbox: true,
     },
   });
 
@@ -26,8 +38,24 @@ function createWindow() {
   }
 
   win.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
+    openExternal(url);
     return { action: 'deny' };
+  });
+
+  win.webContents.on('will-navigate', (event, url) => {
+    try {
+      const current = new URL(win.webContents.getURL());
+      const target = new URL(url);
+      const sameFileApp = current.protocol === 'file:' && target.protocol === 'file:';
+      const sameOrigin = current.origin === target.origin && current.protocol === target.protocol;
+
+      if (!sameFileApp && !sameOrigin) {
+        event.preventDefault();
+        openExternal(url);
+      }
+    } catch {
+      event.preventDefault();
+    }
   });
 }
 
