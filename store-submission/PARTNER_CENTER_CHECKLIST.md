@@ -1,35 +1,60 @@
-# Partner Center — Python Pal (ready answers)
+# Python Pal — Microsoft Partner Center Checklist
 
-## Locked offer (recommended)
+## Product record
 
-| Item | Value |
-|------|--------|
-| Price | **$4.99** USD lifetime (or match your Partner Center choice) |
-| Ads | None |
-| Account | Not required |
-| Content | Lessons + Pyodide playground local in package |
+| Field | Value |
+|---|---|
+| Product name | `Python Pal` |
+| Product ID | `9PM5HBZQVRKW` |
+| Package version | `1.1.0` |
+| Package identity | `ForgeFrontSystems.PythonPal` |
+| Publisher | `CN=8E906094-1F36-496B-A889-858E25A1FCB3` |
+| Publisher display name | `ForgeFront Systems` |
+| Application ID | `PythonPal` |
+| Capability | `runFullTrust` |
 
-## Store listing images — upload order
+Microsoft Partner Center reported the submission as successfully processed on **2026-08-08**.
 
-Upload from `store-submission/images/` in this Partner Center order:
+## Package
 
-### 1. Screenshots (Desktop) — required first
-Folder: `images/screenshots/`
+Build with:
+
+```bash
+npm ci
+npm run dist:appx
+```
+
+Expected output: `release/Python Pal 1.1.0.appx`.
+
+Verify the package identity and version against Partner Center before submitting an update.
+
+## Listing copy
+
+Use `copy/listing-en-US.md` for the English (United States) listing.
+
+## Screenshots
+
+Upload from `images/screenshots/`:
+
 1. `01-home-1920x1080.png`
 2. `02-lesson-1920x1080.png`
 3. `03-playground-1920x1080.png`
 4. `04-tutor-1920x1080.png`
 
-### 2. Store logos (after screenshots)
-Folder: `images/logos/`
-1. `01-app-tile-300x300.png` — 300×300 app tile  
-2. `02-box-art-1x1-1080.png` — 1:1 box art (or `03-box-art-1x1-2160.png`)  
-3. `04-poster-2x3-720x1080.png` — 2:3 poster (or `05-poster-2x3-1440x2160.png`)
+## Store artwork
 
-### 3. Package (APPX tiles embedded)
-Package: `release/Python Pal 1.1.0.appx` (or Desktop copy after build)  
-Identity: `ForgeFrontSystems.PythonPal` / `CN=8E906094-1F36-496B-A889-858E25A1FCB3`  
-Declare **runFullTrust**.
+Upload from `images/logos/` as required by Partner Center:
 
-## Branding source
-`images/branding/` — split icons from your sheet + sheet source.
+- `01-app-tile-300x300.png`
+- `02-box-art-1x1-1080.png` or `03-box-art-1x1-2160.png`
+- `04-poster-2x3-720x1080.png` or `05-poster-2x3-1440x2160.png`
+
+Branding source artwork is preserved under `images/branding/`.
+
+## Commerce
+
+Pricing and market availability are controlled in Partner Center. Verify the existing configured values before any future submission; repository documentation does not override Partner Center commerce settings.
+
+## Content rating
+
+IARC Global Rating ID: `83996d1e-7b47-88d8-8180-3f738d12dff1`.
