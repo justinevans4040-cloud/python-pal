@@ -20,7 +20,7 @@ function createWindow() {
     minWidth: 900,
     minHeight: 640,
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
-    icon: path.join(__dirname, '../public/icon.ico'),
+    icon: path.join(__dirname, '../dist/icon.ico'),
     backgroundColor: '#0a0a0a',
     webPreferences: {
       contextIsolation: true,
