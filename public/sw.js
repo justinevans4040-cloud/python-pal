@@ -11,6 +11,7 @@ const CORE = [
   '/icon-192.png',
   '/icon-512.png',
   '/python-worker.js',
+  '/python-engine-worker.mjs',
 ];
 
 // ── Install: pre-cache core shell ─────────────────────────────────────────────
