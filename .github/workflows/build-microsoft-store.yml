@@ -1,36 +1,111 @@
-name: Build Microsoft Store
+name: Build Corrected Microsoft Store Package
 
 on:
-  push:
-    tags:
-      - 'v*.*.*'
   workflow_dispatch:
+  push:
+    branches:
+      - microsoft-store-1.1.1-fix
 
 permissions:
   contents: read
 
 jobs:
   build-store-package:
-    name: Build Windows APPX
+    name: Build and verify Windows APPX
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Check out corrected Store source
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
-      - name: Install dependencies
+      - name: Install exact dependencies
         run: npm ci
+
+      - name: Verify release version and free build
+        shell: pwsh
+        run: |
+          $package = Get-Content package.json -Raw | ConvertFrom-Json
+          if ($package.version -ne "1.1.1") {
+            throw "Expected release version 1.1.1, found $($package.version)"
+          }
+
+          $forbidden = "paywall|subscription required|subscribe to unlock|premium required|checkout|stripe"
+          $matches = Get-ChildItem src,public -File -Recurse |
+            Select-String -Pattern $forbidden -CaseSensitive:$false
+          if ($matches) {
+            $matches | ForEach-Object { Write-Error "$($_.Path):$($_.LineNumber): $($_.Line)" }
+            throw "Payment or paywall language found in the free build."
+          }
 
       - name: Build APPX package
         run: npm run dist:appx
 
-      - name: Upload APPX artifact
+      - name: Verify APPX identity, upgrade version, and packaged icons
+        shell: pwsh
+        run: |
+          $appx = Get-ChildItem release -Filter *.appx | Select-Object -First 1
+          if (-not $appx) { throw "No APPX package was produced." }
+
+          $verifyRoot = Join-Path $env:RUNNER_TEMP "python-pal-appx-verify"
+          $zipPath = Join-Path $env:RUNNER_TEMP "python-pal.appx.zip"
+          Copy-Item $appx.FullName $zipPath
+          Expand-Archive $zipPath -DestinationPath $verifyRoot -Force
+
+          $manifestPath = Join-Path $verifyRoot "AppxManifest.xml"
+          if (-not (Test-Path $manifestPath)) { throw "AppxManifest.xml is missing." }
+          [xml]$manifest = Get-Content $manifestPath -Raw
+          $identity = $manifest.Package.Identity
+
+          if ($identity.Name -ne "ForgeFrontSystems.PythonPal") {
+            throw "Wrong identity name: $($identity.Name)"
+          }
+          if ($identity.Publisher -ne "CN=8E906094-1F36-496B-A889-858E25A1FCB3") {
+            throw "Wrong publisher: $($identity.Publisher)"
+          }
+          if ($identity.Version -ne "1.1.1.0") {
+            throw "Wrong replacement version: $($identity.Version)"
+          }
+
+          $manifestText = Get-Content $manifestPath -Raw
+          $iconRefs = [regex]::Matches($manifestText, '[A-Za-z0-9_.\\/-]+\.png') |
+            ForEach-Object { $_.Value.Replace('\\','/') } |
+            Sort-Object -Unique
+          if ($iconRefs.Count -lt 3) {
+            throw "Expected at least three packaged icon references, found $($iconRefs.Count)."
+          }
+
+          $iconReport = @()
+          foreach ($iconRef in $iconRefs) {
+            $iconPath = Join-Path $verifyRoot $iconRef
+            if (-not (Test-Path $iconPath)) { throw "Packaged icon missing: $iconRef" }
+            $hash = (Get-FileHash $iconPath -Algorithm SHA256).Hash
+            $iconReport += "$iconRef  SHA256=$hash"
+          }
+
+          $packageHash = (Get-FileHash $appx.FullName -Algorithm SHA256).Hash
+          @(
+            "Package=$($appx.Name)"
+            "SHA256=$packageHash"
+            "Identity=$($identity.Name)"
+            "Publisher=$($identity.Publisher)"
+            "Version=$($identity.Version)"
+            "Icons=$($iconRefs.Count)"
+          ) + $iconReport | Set-Content release/verification.txt
+
+          Copy-Item $manifestPath release/AppxManifest.verified.xml
+
+      - name: Upload verified Microsoft Store package
         uses: actions/upload-artifact@v4
         with:
-          name: python-pal-microsoft-store
-          path: release/*.appx
+          name: Python-Pal-Microsoft-Store-1.1.1-Corrected
+          path: |
+            release/*.appx
+            release/verification.txt
+            release/AppxManifest.verified.xml
           if-no-files-found: error
