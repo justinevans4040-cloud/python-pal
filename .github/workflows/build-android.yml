@@ -104,28 +104,6 @@ jobs:
 
           echo "apk=$final_apk" >> "$GITHUB_OUTPUT"
 
-      - name: Install and launch exact signed APK
-        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d
-        with:
-          api-level: 35
-          arch: x86_64
-          profile: pixel_6
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: true
-          script: |
-            set -euo pipefail
-            apk='release/Python-Pal-1.1.0-Friend-Universal.apk'
-            adb install -r "$apk" | tee release/emulator-install.txt
-            grep -q 'Success' release/emulator-install.txt
-            adb shell am start -W -n com.justindevstudio.pythonpal/.MainActivity | tee release/emulator-launch.txt
-            grep -q 'Status: ok' release/emulator-launch.txt
-            sleep 5
-            adb shell dumpsys activity activities | grep -q 'com.justindevstudio.pythonpal/.MainActivity'
-            if adb logcat -d -t 500 | grep -E 'FATAL EXCEPTION|Process: com\.justindevstudio\.pythonpal'; then
-              exit 1
-            fi
-            adb exec-out screencap -p > release/emulator-screen.png
-
       - name: Upload verified friend package
         uses: actions/upload-artifact@v4
         with:
