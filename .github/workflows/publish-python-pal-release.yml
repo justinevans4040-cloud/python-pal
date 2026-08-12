@@ -1,4 +1,5 @@
 name: Publish Python Pal binaries
+# Exact APK/APPX archive trigger
 
 on:
   workflow_dispatch:
