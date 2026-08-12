@@ -1,27 +1,17 @@
-# ── Android: Build APK ────────────────────────────────────────────────────────
-# Triggers: version tags (v*.*.*)  or manually from Actions tab.
-# Result:   debug APK attached to the GitHub Release.
-#
-# For a signed release APK, add these secrets to your repo:
-#   KEYSTORE_BASE64    — base64-encoded .jks keystore file
-#   KEYSTORE_PASSWORD  — keystore password
-#   KEY_ALIAS          — key alias
-#   KEY_PASSWORD       — key password
-
-name: Build Android
+name: Build Signed Android Friend APK
 
 on:
   push:
-    tags:
-      - 'v*.*.*'
+    branches:
+      - android-friend-release
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-android:
-    name: Build Android APK
+    name: Build and verify signed universal APK
     runs-on: ubuntu-latest
 
     steps:
@@ -29,7 +19,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
       - uses: actions/setup-java@v4
@@ -40,38 +30,84 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Vite web assets
+      - name: Build production web app
         run: npm run build
 
-      - name: Add Android platform (first time only)
+      - name: Generate Android wrapper
         run: |
-          if [ ! -d "android" ]; then
-            npx cap add android
-          fi
+          npx cap add android
+          sed -i 's/versionCode 1/versionCode 110/' android/app/build.gradle
+          sed -i 's/versionName "1.0"/versionName "1.1.0"/' android/app/build.gradle
 
-      - name: Sync Capacitor
+      - name: Apply Python Pal launcher artwork
+        run: |
+          for density in mdpi hdpi xhdpi xxhdpi xxxhdpi; do
+            source="public/android/mipmap-${density}/ic_launcher.png"
+            target="android/app/src/main/res/mipmap-${density}"
+            test -f "$source"
+            install -m 0644 "$source" "$target/ic_launcher.png"
+            install -m 0644 "$source" "$target/ic_launcher_round.png"
+            install -m 0644 "$source" "$target/ic_launcher_foreground.png"
+          done
+
+      - name: Sync production assets
         run: npx cap sync android
 
-      - name: Make Gradle wrapper executable
-        run: chmod +x android/gradlew
-
-      - name: Build debug APK
+      - name: Build unsigned universal release APK
         working-directory: android
-        run: ./gradlew assembleDebug
-
-      - name: Locate APK
-        id: find-apk
         run: |
-          APK=$(find android -name "*.apk" | head -1)
-          echo "path=$APK" >> $GITHUB_OUTPUT
+          chmod +x gradlew
+          ./gradlew assembleRelease
 
-      - name: Upload APK artifact
+      - name: Sign and verify release APK
+        id: package
+        env:
+          SIGN_PASS: python-pal-private-distribution
+        run: |
+          set -euo pipefail
+          unsigned_apk=$(find android/app/build/outputs/apk/release -name '*-unsigned.apk' -print -quit)
+          test -n "$unsigned_apk"
+
+          build_tools=$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -1)
+          test -x "$build_tools/zipalign"
+          test -x "$build_tools/apksigner"
+          test -x "$build_tools/aapt"
+
+          keytool -genkeypair -noprompt \
+            -alias pythonpalfriend \
+            -keyalg RSA \
+            -keysize 4096 \
+            -validity 3650 \
+            -dname 'CN=Python Pal Friend, OU=Private Distribution, O=ForgeFront Systems, C=US' \
+            -keystore "$RUNNER_TEMP/python-pal-friend.jks" \
+            -storepass "$SIGN_PASS" \
+            -keypass "$SIGN_PASS"
+
+          mkdir -p release
+          aligned_apk="$RUNNER_TEMP/python-pal-aligned.apk"
+          final_apk='release/Python-Pal-1.1.0-Friend-Universal.apk'
+          "$build_tools/zipalign" -p -f 4 "$unsigned_apk" "$aligned_apk"
+          "$build_tools/apksigner" sign \
+            --ks "$RUNNER_TEMP/python-pal-friend.jks" \
+            --ks-key-alias pythonpalfriend \
+            --ks-pass "pass:$SIGN_PASS" \
+            --key-pass "pass:$SIGN_PASS" \
+            --out "$final_apk" \
+            "$aligned_apk"
+
+          "$build_tools/apksigner" verify --verbose --print-certs "$final_apk" | tee release/signature-verification.txt
+          "$build_tools/zipalign" -c -v 4 "$final_apk" > release/zipalign-verification.txt
+          "$build_tools/aapt" dump badging "$final_apk" | tee release/package-badging.txt
+          grep -q "package: name='com.justindevstudio.pythonpal' versionCode='110' versionName='1.1.0'" release/package-badging.txt
+          sha256sum "$final_apk" | tee release/SHA256SUMS.txt
+          stat -c 'APK bytes: %s' "$final_apk" | tee release/file-size.txt
+
+          echo "apk=$final_apk" >> "$GITHUB_OUTPUT"
+
+      - name: Upload verified friend package
         uses: actions/upload-artifact@v4
         with:
-          name: python-pal-android
-          path: ${{ steps.find-apk.outputs.path }}
-
-      - name: Attach APK to GitHub Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: ${{ steps.find-apk.outputs.path }}
+          name: Python-Pal-1.1.0-Friend-Android
+          path: release/
+          if-no-files-found: error
+          retention-days: 30
