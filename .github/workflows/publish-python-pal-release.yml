@@ -43,11 +43,11 @@ jobs:
           test -n "$appx"
           cp "$apk" release/assets/Python-Pal-1.1.0-Correct-Store-Icon.apk
           cp "$appx" release/assets/Python-Pal-Microsoft-Store-1.1.1.appx
-          cp release/android/release/signature-verification.txt release/assets/Android-signature-verification.txt
-          cp release/android/release/zipalign-verification.txt release/assets/Android-zipalign-verification.txt
-          cp release/android/release/package-badging.txt release/assets/Android-package-badging.txt
-          cp release/android/release/SHA256SUMS.txt release/assets/Android-SHA256SUMS.txt
-          cp release/android/release/file-size.txt release/assets/Android-file-size.txt
+          cp release/android/signature-verification.txt release/assets/Android-signature-verification.txt
+          cp release/android/zipalign-verification.txt release/assets/Android-zipalign-verification.txt
+          cp release/android/package-badging.txt release/assets/Android-package-badging.txt
+          cp release/android/SHA256SUMS.txt release/assets/Android-SHA256SUMS.txt
+          cp release/android/file-size.txt release/assets/Android-file-size.txt
           cp release/store/verification.txt release/assets/Store-verification.txt
           cp release/store/AppxManifest.verified.xml release/assets/AppxManifest.verified.xml
           sha256sum release/assets/*.apk release/assets/*.appx > release/assets/SHA256SUMS.txt
