@@ -51,7 +51,7 @@ jobs:
           cp release/android/file-size.txt release/assets/Android-file-size.txt
           cp release/store/verification.txt release/assets/Store-verification.txt
           cp release/store/AppxManifest.verified.xml release/assets/AppxManifest.verified.xml
-          cp RELEASES/Python-Pal-v1.1.1-README.md release/assets/Python-Pal-v1.1.1-README.md
+          if [ -f RELEASES/Python-Pal-v1.1.1-README.md ]; then cp RELEASES/Python-Pal-v1.1.1-README.md release/assets/Python-Pal-v1.1.1-README.md; else cp README.md release/assets/Python-Pal-v1.1.1-README.md; fi
           sha256sum release/assets/*.apk release/assets/*.appx > release/assets/SHA256SUMS.txt
 
       - name: Publish permanent GitHub release
