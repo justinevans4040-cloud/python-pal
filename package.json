@@ -1,7 +1,7 @@
 {
   "name": "python-pal",
   "private": true,
-  "version": "1.1.0",
+  "version": "1.1.1",
   "type": "module",
   "description": "Python Pal — bilingual Python learning for beginners",
   "author": "ForgeFront Systems",
