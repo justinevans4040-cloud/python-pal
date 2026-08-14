@@ -1,4 +1,4 @@
-# Python Pal — Microsoft Partner Center Checklist
+# Python Pal - Microsoft Partner Center Checklist
 
 ## Product record
 
@@ -6,14 +6,14 @@
 |---|---|
 | Product name | `Python Pal` |
 | Product ID | `9PM5HBZQVRKW` |
-| Package version | `1.1.0` |
+| Package version | `1.1.1.0` |
 | Package identity | `ForgeFrontSystems.PythonPal` |
 | Publisher | `CN=8E906094-1F36-496B-A889-858E25A1FCB3` |
 | Publisher display name | `ForgeFront Systems` |
 | Application ID | `PythonPal` |
 | Capability | `runFullTrust` |
 
-Microsoft Partner Center reported the submission as successfully processed on **2026-08-08**.
+Microsoft Partner Center reported the prior submission as successfully processed on **2026-08-08**. Use this checklist for the corrected `1.1.1` update package.
 
 ## Package
 
@@ -24,9 +24,20 @@ npm ci
 npm run dist:appx
 ```
 
-Expected output: `release/Python Pal 1.1.0.appx`.
+Release workflow alignment:
 
-Verify the package identity and version against Partner Center before submitting an update.
+| Item | Value |
+|---|---|
+| Source package version | `1.1.1` |
+| APPX identity version | `1.1.1.0` |
+| Store build workflow | `.github/workflows/build-microsoft-store.yml` |
+| Store build branch | `microsoft-store-1.1.1-fix` |
+| Uploaded workflow artifact | `Python-Pal-Microsoft-Store-1.1.1-Corrected` |
+| Published release tag | `v1.1.1` |
+| Published Store package asset | `Python-Pal-Microsoft-Store-1.1.1.appx` |
+| Verification assets | `Store-verification.txt`, `AppxManifest.verified.xml` |
+
+Verify the package identity, publisher, and `1.1.1.0` APPX version against Partner Center before submitting the update. Do not reuse the old `1.1.0` APPX package for this submission.
 
 ## Listing copy
 
