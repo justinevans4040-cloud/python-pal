@@ -121,3 +121,6 @@ The normal `build-android.yml` workflow is an unsigned build-verification path. 
 `master` is the authoritative Python Pal branch. Production code, release configuration, Store assets, deployment records, and binary-release documentation belong in this repository.
 
 Proprietary software. Copyright © 2026 ForgeFront Systems.
+
+## Repository Operations Template
+This repository follows the standard operating files: STATUS.md, ROADMAP.md, CHANGELOG.md, CONTRIBUTING.md, SECURITY.md, GOVERNANCE.md, and REPO_TEMPLATE.md.
